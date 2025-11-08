@@ -1,0 +1,21 @@
+llama-cpp-python
+langchain
+langchain-core
+langchain-community>=0.0.10
+redis
+
+# Pinecone Vector Database
+pinecone-client
+sentence-transformers
+
+# Firebase Firestore Database
+firebase-admin
+
+# FastAPI & Web Server
+fastapi
+uvicorn[standard]
+pydantic
+
+# Additional dependencies for embeddings
+torch
+transformers

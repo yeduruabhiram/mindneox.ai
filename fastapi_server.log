@@ -1,0 +1,297 @@
+INFO:     Will watch for changes in these directories: ['/Users/yeduruabhiram/Desktop/llm testing ']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [63797] using WatchFiles
+/Users/yeduruabhiram/Desktop/llm testing /venv/lib/python3.14/site-packages/langchain_core/_api/deprecation.py:26: UserWarning: Core Pydantic V1 functionality isn't compatible with Python 3.14 or greater.
+  from pydantic.v1.fields import FieldInfo as FieldInfoV1
+INFO:     Started server process [63849]
+INFO:     Waiting for application startup.
+llama_context: n_batch is less than GGML_KQ_MASK_PAD - increasing to 64
+llama_context: n_ctx_per_seq (4096) < n_ctx_train (32768) -- the full capacity of the model will not be utilized
+ggml_metal_init: skipping kernel_get_rows_bf16                     (not supported)
+ggml_metal_init: skipping kernel_set_rows_bf16                     (not supported)
+ggml_metal_init: skipping kernel_mul_mv_bf16_f32                   (not supported)
+ggml_metal_init: skipping kernel_mul_mv_bf16_f32_c4                (not supported)
+ggml_metal_init: skipping kernel_mul_mv_bf16_f32_1row              (not supported)
+ggml_metal_init: skipping kernel_mul_mv_bf16_f32_l4                (not supported)
+ggml_metal_init: skipping kernel_mul_mv_bf16_bf16                  (not supported)
+ggml_metal_init: skipping kernel_mul_mv_id_bf16_f32                (not supported)
+ggml_metal_init: skipping kernel_mul_mm_bf16_f32                   (not supported)
+ggml_metal_init: skipping kernel_mul_mm_id_bf16_f16                (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h64           (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h80           (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h96           (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h112          (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h128          (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h192          (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_hk192_hv128   (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h256          (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_hk576_hv512   (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h64       (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h96       (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h128      (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h192      (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_hk192_hv128 (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h256      (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_hk576_hv512 (not supported)
+ggml_metal_init: skipping kernel_cpy_f32_bf16                      (not supported)
+ggml_metal_init: skipping kernel_cpy_bf16_f32                      (not supported)
+ggml_metal_init: skipping kernel_cpy_bf16_bf16                     (not supported)
+INFO:     Application startup complete.
+======================================================================
+🚀 Starting Mindneox.ai API Server
+======================================================================
+
+🔴 Connecting to Redis for conversation memory...
+✅ Redis connected! Conversation memory enabled.
+
+🔥 Connecting to Firebase Firestore...
+✅ Firebase connected! Project: mindneoxai
+
+📊 Connecting to Pinecone...
+✅ Pinecone connected!
+
+🔤 Loading embedding model...
+✅ Embedding model loaded!
+
+🤖 Loading Mistral-7B AI Model...
+✅ AI Model loaded successfully!
+
+======================================================================
+✅ API Server Ready!
+📍 Docs: http://localhost:8000/docs
+======================================================================
+
+INFO:     127.0.0.1:55170 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55174 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55209 - "POST /api/chat HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'fastapi_chatbot.py'. Reloading...
+INFO:     127.0.0.1:55219 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [63849]
+/Users/yeduruabhiram/Desktop/llm testing /venv/lib/python3.14/site-packages/langchain_core/_api/deprecation.py:26: UserWarning: Core Pydantic V1 functionality isn't compatible with Python 3.14 or greater.
+  from pydantic.v1.fields import FieldInfo as FieldInfoV1
+INFO:     Started server process [64741]
+INFO:     Waiting for application startup.
+llama_context: n_batch is less than GGML_KQ_MASK_PAD - increasing to 64
+llama_context: n_ctx_per_seq (4096) < n_ctx_train (32768) -- the full capacity of the model will not be utilized
+ggml_metal_init: skipping kernel_get_rows_bf16                     (not supported)
+ggml_metal_init: skipping kernel_set_rows_bf16                     (not supported)
+ggml_metal_init: skipping kernel_mul_mv_bf16_f32                   (not supported)
+ggml_metal_init: skipping kernel_mul_mv_bf16_f32_c4                (not supported)
+ggml_metal_init: skipping kernel_mul_mv_bf16_f32_1row              (not supported)
+ggml_metal_init: skipping kernel_mul_mv_bf16_f32_l4                (not supported)
+ggml_metal_init: skipping kernel_mul_mv_bf16_bf16                  (not supported)
+ggml_metal_init: skipping kernel_mul_mv_id_bf16_f32                (not supported)
+ggml_metal_init: skipping kernel_mul_mm_bf16_f32                   (not supported)
+ggml_metal_init: skipping kernel_mul_mm_id_bf16_f16                (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h64           (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h80           (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h96           (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h112          (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h128          (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h192          (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_hk192_hv128   (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h256          (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_hk576_hv512   (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h64       (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h96       (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h128      (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h192      (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_hk192_hv128 (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h256      (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_hk576_hv512 (not supported)
+ggml_metal_init: skipping kernel_cpy_f32_bf16                      (not supported)
+ggml_metal_init: skipping kernel_cpy_bf16_f32                      (not supported)
+ggml_metal_init: skipping kernel_cpy_bf16_bf16                     (not supported)
+INFO:     Application startup complete.
+======================================================================
+🚀 Starting Mindneox.ai API Server
+======================================================================
+
+🔴 Connecting to Redis for conversation memory...
+✅ Redis connected! Conversation memory enabled.
+
+🔥 Connecting to Firebase Firestore...
+✅ Firebase connected! Project: mindneoxai
+
+📊 Connecting to Pinecone...
+✅ Pinecone connected!
+
+🔤 Loading embedding model...
+✅ Embedding model loaded!
+
+🤖 Loading Mistral-7B AI Model...
+✅ AI Model loaded successfully!
+
+======================================================================
+✅ API Server Ready!
+📍 Docs: http://localhost:8000/docs
+======================================================================
+
+INFO:     127.0.0.1:55232 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55239 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55253 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55258 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/context HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55275 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55278 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/context HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55282 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55285 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55288 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55292 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55295 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/context HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55300 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55402 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55404 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/context HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55415 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55417 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/context HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55448 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55450 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/context HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55464 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55496 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55513 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55538 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55541 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/context HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55544 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55548 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55564 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55569 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55603 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55617 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55629 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55656 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55665 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55694 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55738 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55748 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55751 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55753 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55767 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55770 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55777 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55779 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55832 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55835 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55838 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55841 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55878 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55880 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55892 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55894 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'test_api.py', 'fastapi_chatbot.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [64741]
+/Users/yeduruabhiram/Desktop/llm testing /venv/lib/python3.14/site-packages/langchain_core/_api/deprecation.py:26: UserWarning: Core Pydantic V1 functionality isn't compatible with Python 3.14 or greater.
+  from pydantic.v1.fields import FieldInfo as FieldInfoV1
+INFO:     Started server process [79299]
+INFO:     Waiting for application startup.
+llama_context: n_batch is less than GGML_KQ_MASK_PAD - increasing to 64
+llama_context: n_ctx_per_seq (4096) < n_ctx_train (32768) -- the full capacity of the model will not be utilized
+ggml_metal_init: skipping kernel_get_rows_bf16                     (not supported)
+ggml_metal_init: skipping kernel_set_rows_bf16                     (not supported)
+ggml_metal_init: skipping kernel_mul_mv_bf16_f32                   (not supported)
+ggml_metal_init: skipping kernel_mul_mv_bf16_f32_c4                (not supported)
+ggml_metal_init: skipping kernel_mul_mv_bf16_f32_1row              (not supported)
+ggml_metal_init: skipping kernel_mul_mv_bf16_f32_l4                (not supported)
+ggml_metal_init: skipping kernel_mul_mv_bf16_bf16                  (not supported)
+ggml_metal_init: skipping kernel_mul_mv_id_bf16_f32                (not supported)
+ggml_metal_init: skipping kernel_mul_mm_bf16_f32                   (not supported)
+ggml_metal_init: skipping kernel_mul_mm_id_bf16_f16                (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h64           (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h80           (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h96           (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h112          (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h128          (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h192          (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_hk192_hv128   (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_h256          (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_bf16_hk576_hv512   (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h64       (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h96       (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h128      (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h192      (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_hk192_hv128 (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h256      (not supported)
+ggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_hk576_hv512 (not supported)
+ggml_metal_init: skipping kernel_cpy_f32_bf16                      (not supported)
+ggml_metal_init: skipping kernel_cpy_bf16_f32                      (not supported)
+ggml_metal_init: skipping kernel_cpy_bf16_bf16                     (not supported)
+INFO:     Application startup complete.
+======================================================================
+🚀 Starting Mindneox.ai API Server
+======================================================================
+
+🔴 Connecting to Redis for conversation memory...
+✅ Redis connected! Conversation memory enabled.
+
+🔥 Connecting to Firebase Firestore...
+✅ Firebase connected! Project: mindneoxai
+
+📊 Connecting to Pinecone...
+✅ Pinecone connected!
+
+🔤 Loading embedding model...
+✅ Embedding model loaded!
+
+🤖 Loading Mistral-7B AI Model...
+✅ AI Model loaded successfully!
+
+======================================================================
+✅ API Server Ready!
+📍 Docs: http://localhost:8000/docs
+======================================================================
+
+INFO:     127.0.0.1:55937 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55939 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55944 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55947 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55952 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55955 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55958 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55961 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55964 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55967 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55970 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55973 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55977 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55995 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55998 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56044 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56046 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56098 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56101 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56365 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56367 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57232 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57235 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57359 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57363 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57375 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57377 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57400 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57402 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57407 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57410 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57436 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57438 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57451 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57454 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57466 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57468 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57481 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57483 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57517 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57520 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57561 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57564 - "GET /api/user/user_35BzqBa84O05yIIWZ1yfpuRG4eN/history?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57855 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [79299]
+INFO:     Stopping reloader process [63797]
+/opt/homebrew/Cellar/python@3.14/3.14.0/Frameworks/Python.framework/Versions/3.14/lib/python3.14/multiprocessing/resource_tracker.py:297: UserWarning: resource_tracker: There appear to be 3 leaked semaphore objects to clean up at shutdown: {'/loky-63849-dayh_q8f', '/loky-79299-uvopg9cc', '/loky-64741-_sjv0_b6'}
+  warnings.warn(
