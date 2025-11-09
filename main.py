@@ -8,12 +8,30 @@ import redis
 import hashlib
 from datetime import datetime
 
-# Pinecone integration
+import os
+
+# Pinecone integration (import guarded so a broken/renamed package doesn't
+# crash the whole process at module-import time when running under Uvicorn).
+# If pinecone raises anything during import (for example because an old
+# `pinecone-client` package is present), we'll catch it, log it, and continue
+# with Pinecone disabled. This lets the web server bind and respond to health
+# checks while we investigate the dependency issue.
+pinecone = None
+PINECONE_AVAILABLE = False
 try:
-    from pinecone import Pinecone
+    # Importing pinecone can raise a runtime Exception if an incompatible
+    # `pinecone-client` package is installed in the environment; catch any
+    # Exception (not only ImportError) so startup is resilient.
+    import pinecone as _pinecone
     from langchain_community.embeddings import HuggingFaceEmbeddings
+
+    pinecone = _pinecone
     PINECONE_AVAILABLE = True
-except ImportError:
+except Exception as e:
+    # Non-fatal at startup: log and continue with Pinecone disabled. The
+    # application will still run and can use Redis or in-memory cache.
+    print(f"⚠️  Pinecone import failed at startup (continuing without Pinecone): {e}")
+    pinecone = None
     PINECONE_AVAILABLE = False
 
 # Firebase integration
@@ -36,19 +54,24 @@ embeddings = None
 if PINECONE_AVAILABLE:
     try:
         print("\n🔗 Connecting to Pinecone...")
-        PINECONE_API_KEY = "pcsk_5A9JjS_JVvYF7aE1kieuSnTXitm1pEMdVhg2wkpijQ3hiV9aC7rZ2CurG5qRfXE9FxHLAh"
-        INDEX_NAME = "mindnex-responses"
-        
-        pc = Pinecone(api_key=PINECONE_API_KEY)
-        pinecone_index = pc.Index(INDEX_NAME)
-        
+        # Use environment variable for API key in production. Do NOT hardcode secrets.
+        PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY", "")
+        INDEX_NAME = os.environ.get("PINECONE_INDEX_NAME", "mindnex-responses")
+
+        if not PINECONE_API_KEY:
+            raise RuntimeError("PINECONE_API_KEY not set in environment")
+
+        # Initialize the official pinecone client
+        pinecone.init(api_key=PINECONE_API_KEY)
+        pinecone_index = pinecone.Index(INDEX_NAME)
+
         # Initialize embeddings
         print("🔤 Loading embedding model...")
         embeddings = HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-MiniLM-L6-v2",
             model_kwargs={'device': 'cpu'}
         )
-        
+
         # Check index stats
         stats = pinecone_index.describe_index_stats()
         print(f"✅ Pinecone connected! ({stats['total_vector_count']} vectors stored)\n")

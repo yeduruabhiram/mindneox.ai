@@ -5,7 +5,9 @@ langchain-community>=0.0.10
 redis
 
 # Pinecone Vector Database
-pinecone-client
+# The package was renamed from `pinecone-client` to `pinecone`.
+# Use the new package name. Pin to a recent stable version to avoid unexpected breaks.
+pinecone>=2.2.0
 sentence-transformers
 
 # Firebase Firestore Database
