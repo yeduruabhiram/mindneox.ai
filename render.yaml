@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: mindneox-backend
+    env: python
+    plan: free
+    region: oregon
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    workingDirectory: .
+    envVars:
+      - key: MODEL_URL
+        value: ""
+      - key: CLERK_SECRET_KEY
+        value: ""
+      - key: REDIS_URL
+        value: ""
+      - key: ALLOWED_ORIGINS
+        value: "https://your-frontend-url.vercel.app"
