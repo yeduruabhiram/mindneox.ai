@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { ClerkProvider } from '@clerk/clerk-react'
 import './index.css'
 import App from './App.jsx'
+import ErrorBoundary from './components/ErrorBoundary'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -15,13 +16,15 @@ if ('scrollRestoration' in history) {
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      {PUBLISHABLE_KEY ? (
-        <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+      <ErrorBoundary>
+        {PUBLISHABLE_KEY ? (
+          <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+            <App />
+          </ClerkProvider>
+        ) : (
           <App />
-        </ClerkProvider>
-      ) : (
-        <App />
-      )}
+        )}
+      </ErrorBoundary>
     </BrowserRouter>
   </StrictMode>,
 )
