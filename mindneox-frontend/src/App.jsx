@@ -8,15 +8,18 @@ import AIAgentPage from './pages/AIAgentPage'
 import MarketplacePage from './pages/MarketplacePage'
 import DashboardPage from './pages/DashboardPage'
 import ProfilePageNew from './pages/ProfilePageNew'
+import ReportPage from './pages/ReportPage'
 import SplashScreen from './components/SplashScreen'
 import NetworkStatus from './components/NetworkStatus'
 import LoadingSpinner from './components/LoadingSpinner'
 import PageLoader from './components/PageLoader'
 import TransitionOverlay from './components/TransitionOverlay'
+import RefreshLoader from './components/RefreshLoader'
+import useConnectionStatus from './hooks/useConnectionStatus'
 
 function App() {
   const [showSplash, setShowSplash] = useState(true) // Always show on load for testing
-  const [isRefreshing, setIsRefreshing] = useState(false)
+  const { isOnline, isRefreshing } = useConnectionStatus()
   const location = useLocation()
 
   const handleSplashComplete = () => {
@@ -24,28 +27,19 @@ function App() {
     setShowSplash(false)
   }
 
-  // Detect page refresh and show loading animation
-  useEffect(() => {
-    // Check if page was refreshed
-    const navigationEntries = performance.getEntriesByType('navigation')
-    if (navigationEntries.length > 0) {
-      const navEntry = navigationEntries[0]
-      if (navEntry.type === 'reload') {
-        setIsRefreshing(true)
-        const timer = setTimeout(() => setIsRefreshing(false), 1000)
-        return () => clearTimeout(timer)
-      }
-    }
-  }, [])
-
   // Show splash screen first
   if (showSplash) {
     return <SplashScreen onComplete={handleSplashComplete} />
   }
 
-  // Show refresh loader
+  // Show refresh loader when page is refreshed
   if (isRefreshing) {
-    return <PageLoader />
+    return <RefreshLoader isOnline={isOnline} message="Refreshing MindNeox.AI..." />
+  }
+
+  // Show offline screen when connection is lost
+  if (!isOnline) {
+    return <RefreshLoader isOnline={false} message="Please check your internet connection" />
   }
 
   // Show main app with smooth transitions
@@ -63,6 +57,7 @@ function App() {
               <Route path="marketplace" element={<MarketplacePage />} />
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="profile" element={<ProfilePageNew />} />
+              <Route path="report" element={<ReportPage />} />
             </Route>
           </Routes>
         </AnimatePresence>

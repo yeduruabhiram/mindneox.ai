@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Brain, 
@@ -13,6 +13,7 @@ import {
   User,
   LogOut,
   Settings
+  ,Flag
 } from 'lucide-react'
 import { SignInButton, SignUpButton, UserButton, useUser, SignedIn, SignedOut, useClerk } from '@clerk/clerk-react'
 
@@ -68,6 +69,7 @@ export default function Navbar() {
     { name: 'Marketplace', path: '/marketplace', icon: Store },
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Profile', path: '/profile', icon: User },
+      { name: 'Report', path: '/report', icon: Flag },
   ]
 
   const isActive = (path) => location.pathname === path

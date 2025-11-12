@@ -27,7 +27,11 @@ import {
   Edit3,
   Search
 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Flag } from 'lucide-react'
 import axios from 'axios'
+// Use Vite env var if provided, otherwise default to localhost backend
+const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 import { useUser } from '@clerk/clerk-react'
 import useConversationLimit from '../hooks/useConversationLimit'
 import LoginPrompt from '../components/LoginPrompt'
@@ -53,8 +57,11 @@ export default function ChatbotPage() {
   const [showHistory, setShowHistory] = useState(false)
   const [conversationHistory, setConversationHistory] = useState([])
   const [searchHistory, setSearchHistory] = useState('')
+  const navigate = useNavigate()
   const messagesEndRef = useRef(null)
   const fileInputRef = useRef(null)
+  const [touchStart, setTouchStart] = useState(null)
+  const [touchEnd, setTouchEnd] = useState(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -70,13 +77,13 @@ export default function ChatbotPage() {
       if (isLoaded && user) {
         try {
           // Load full conversation history for sidebar
-          const historyResponse = await axios.get(`/api/user/${user.id}/history?limit=50`)
+          const historyResponse = await axios.get(`${API_BASE}/api/user/${user.id}/history?limit=50`)
           if (historyResponse.data.history && historyResponse.data.history.length > 0) {
             setConversationHistory(historyResponse.data.history.reverse())
           }
 
           // Load recent messages for current chat
-          const response = await axios.get(`/api/user/${user.id}/history?limit=10`)
+          const response = await axios.get(`${API_BASE}/api/user/${user.id}/history?limit=10`)
           if (response.data.history && response.data.history.length > 0) {
             // Convert Redis history to message format
             const historyMessages = response.data.history.reverse().map(h => [
@@ -103,7 +110,7 @@ export default function ChatbotPage() {
           }
 
           // Get personalized greeting
-          const predictResponse = await axios.get(`/api/user/${user.id}/predict`)
+          const predictResponse = await axios.get(`${API_BASE}/api/user/${user.id}/predict`)
           if (predictResponse.data.greeting) {
             setMessages(prev => [{
               role: 'assistant',
@@ -149,7 +156,7 @@ export default function ChatbotPage() {
     setIsLoading(true)
 
     try {
-      const response = await axios.post('/api/chat', {
+  const response = await axios.post(`${API_BASE}/api/chat`, {
         message: input,
         user_id: userId,
         clerk_user_id: user?.id || null,
@@ -249,13 +256,47 @@ export default function ChatbotPage() {
     conv.assistant_response?.toLowerCase().includes(searchHistory.toLowerCase())
   )
 
+  // Swipe gesture handlers for mobile
+  const minSwipeDistance = 50
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return
+    
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > minSwipeDistance
+    const isRightSwipe = distance < -minSwipeDistance
+    
+    // Right swipe (from left edge) opens history
+    if (isRightSwipe && touchStart < 50) {
+      setShowHistory(true)
+    }
+    // Left swipe closes history
+    if (isLeftSwipe && showHistory) {
+      setShowHistory(false)
+    }
+  }
+
   return (
     <>
       <LoginPrompt 
         isOpen={showLoginPrompt} 
         onClose={resetConversationCount} 
       />
-      <div className="relative pt-20 pb-6 px-6 min-h-screen flex">
+      <div 
+        className="relative pt-20 pb-6 px-6 min-h-screen flex"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
       {/* ChatGPT-Style History Sidebar */}
       <AnimatePresence>
         {showHistory && (
@@ -397,14 +438,36 @@ export default function ChatbotPage() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setShowHistory(!showHistory)}
-        className="fixed left-6 top-24 z-30 glass-card p-3 rounded-lg border border-neon-cyan/30 hover:border-neon-cyan/50 hover:bg-neon-cyan/10 transition-all group"
-        title="Chat History"
+        className="fixed left-6 top-24 z-30 glass-card p-3 rounded-lg border border-indigo-400/30 hover:border-indigo-400/50 hover:bg-indigo-500/10 transition-all group"
+        title="Chat History (Swipe right from edge on mobile)"
       >
-        <History className="w-5 h-5 text-neon-cyan group-hover:rotate-12 transition-transform" />
+        <History className="w-5 h-5 text-indigo-400 group-hover:rotate-12 transition-transform" />
+        {/* Mobile Swipe Hint */}
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: [0, 1, 0], x: [-10, 5, -10] }}
+          transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+          className="absolute -right-2 top-1/2 -translate-y-1/2 lg:hidden"
+        >
+          <div className="w-1 h-6 bg-gradient-to-r from-transparent via-indigo-400 to-transparent rounded-full" />
+        </motion.div>
+      </motion.button>
+
+      {/* Report Button (Fixed Position) - opens report page with chat context */}
+      <motion.button
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => navigate('/report', { state: { messages, source: 'chatbot' } })}
+        className="fixed right-6 top-32 z-30 glass-card p-3 rounded-lg border border-neon-magenta/30 hover:border-neon-magenta/50 hover:bg-neon-magenta/10 transition-all group"
+        title="Report bug or feedback"
+      >
+        <Flag className="w-5 h-5 text-neon-magenta group-hover:rotate-6 transition-transform" />
       </motion.button>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex items-center justify-center">
+      <div className={`flex-1 flex items-center justify-center ${messages.length === 1 ? 'min-h-screen' : ''}`}>
         {/* AI Pulse Indicator - Compact & Clean */}
       <motion.div
         initial={{ opacity: 0, scale: 0 }}
@@ -528,29 +591,42 @@ export default function ChatbotPage() {
                         } ${message.error ? 'from-red-500/50 to-orange-500/50' : ''}`}
                       />
 
-                      {/* Main Glass Panel - Clean & Visible */}
+                      {/* Unique Hexagonal Panel Design */}
                       <div 
-                        className={`relative backdrop-blur-xl rounded-xl p-4 border shadow-lg transition-all duration-300 ${
+                        className={`relative backdrop-blur-xl rounded-2xl p-4 border shadow-2xl transition-all duration-300 ${
                           message.role === 'user'
-                            ? 'bg-gradient-to-br from-neon-cyan/15 via-blue-500/8 to-transparent border-neon-cyan/25'
-                            : 'bg-gradient-to-br from-neon-magenta/15 via-pink-500/8 to-transparent border-neon-magenta/25'
-                        } ${message.error ? 'from-red-500/20 border-red-500/40' : ''} group-hover:border-opacity-50`}
+                            ? 'bg-gradient-to-br from-indigo-900/40 via-purple-900/20 to-transparent border-indigo-400/30 shadow-indigo-500/20'
+                            : 'bg-gradient-to-br from-emerald-900/40 via-teal-900/20 to-transparent border-emerald-400/30 shadow-emerald-500/20'
+                        } ${message.error ? 'from-red-900/40 border-red-500/40' : ''} group-hover:border-opacity-60 group-hover:shadow-xl`}
+                        style={{
+                          clipPath: message.role === 'user' 
+                            ? 'polygon(0% 0%, 95% 0%, 100% 15%, 100% 100%, 5% 100%, 0% 85%)'
+                            : 'polygon(5% 0%, 100% 0%, 100% 85%, 95% 100%, 0% 100%, 0% 15%)'
+                        }}
                       >
-                        {/* Subtle Shimmer Effect */}
+                        {/* Holographic Scan Line Effect */}
                         <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: [0, 0.15, 0] }}
-                          transition={{ duration: 2, repeat: Infinity, repeatDelay: 2 }}
-                          className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none"
+                          initial={{ y: '-100%' }}
+                          animate={{ y: '200%' }}
+                          transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
+                          className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none"
                         >
                           <div 
-                            className={`absolute inset-0 ${
+                            className={`absolute inset-0 h-8 ${
                               message.role === 'user'
-                                ? 'bg-gradient-to-br from-neon-cyan/20 via-transparent to-transparent'
-                                : 'bg-gradient-to-br from-neon-magenta/20 via-transparent to-transparent'
-                            }`}
+                                ? 'bg-gradient-to-b from-transparent via-indigo-400/30 to-transparent'
+                                : 'bg-gradient-to-b from-transparent via-emerald-400/30 to-transparent'
+                            } blur-sm`}
                           />
                         </motion.div>
+                        
+                        {/* Corner Accents */}
+                        <div className={`absolute top-2 ${message.role === 'user' ? 'right-2' : 'left-2'} w-3 h-3 border-t-2 border-r-2 ${
+                          message.role === 'user' ? 'border-indigo-400/50' : 'border-emerald-400/50'
+                        } rounded-tr-lg`} />
+                        <div className={`absolute bottom-2 ${message.role === 'user' ? 'left-2' : 'right-2'} w-3 h-3 border-b-2 border-l-2 ${
+                          message.role === 'user' ? 'border-indigo-400/50' : 'border-emerald-400/50'
+                        } rounded-bl-lg`} />
 
                         {/* File Attachments - Compact */}
                         {message.files && message.files.length > 0 && (
@@ -589,7 +665,27 @@ export default function ChatbotPage() {
                           </motion.div>
                         )}
                         
-                        {/* Message Text - Clean & Readable */}
+                        {/* Message Header with Icon */}
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className={`w-6 h-6 rounded-md flex items-center justify-center ${
+                            message.role === 'user'
+                              ? 'bg-indigo-500/30 border border-indigo-400/40'
+                              : 'bg-emerald-500/30 border border-emerald-400/40'
+                          }`}>
+                            {message.role === 'user' ? (
+                              <User className="w-3.5 h-3.5 text-indigo-300" />
+                            ) : (
+                              <Brain className="w-3.5 h-3.5 text-emerald-300" />
+                            )}
+                          </div>
+                          <span className={`text-xs font-mono uppercase tracking-wider ${
+                            message.role === 'user' ? 'text-indigo-300' : 'text-emerald-300'
+                          }`}>
+                            {message.role === 'user' ? 'You' : 'MindNeox AI'}
+                          </span>
+                        </div>
+                        
+                        {/* Message Text - Unique Typography */}
                         <motion.div
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
@@ -598,52 +694,56 @@ export default function ChatbotPage() {
                         >
                           <p className={`${
                             message.role === 'user'
-                              ? 'text-white font-medium'
-                              : 'text-white/95 font-normal'
-                          } text-[15px] leading-relaxed`}>
+                              ? 'text-white/95 font-medium'
+                              : 'text-white/90 font-normal'
+                          } text-[15px] leading-relaxed tracking-wide`}>
                             {message.content}
                           </p>
                         </motion.div>
 
-                        {/* Status Footer - Compact */}
+                        {/* Futuristic Status Footer */}
                         <motion.div
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ delay: 0.2 }}
                           className={`flex items-center gap-2 mt-3 pt-2 border-t ${
                             message.role === 'user' 
-                              ? 'border-neon-cyan/15 justify-end' 
-                              : 'border-neon-magenta/15 justify-start'
+                              ? 'border-indigo-500/20 justify-end' 
+                              : 'border-emerald-500/20 justify-start'
                           }`}
                         >
-                          {/* Small Status Dot */}
-                          <div className={`w-1.5 h-1.5 rounded-full ${
-                            message.role === 'user' ? 'bg-neon-cyan/60' : 'bg-neon-magenta/60'
-                          }`} />
+                          {/* Animated Status Indicator */}
+                          <motion.div 
+                            animate={{ scale: [1, 1.2, 1] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              message.role === 'user' ? 'bg-indigo-400 shadow-indigo-400/50' : 'bg-emerald-400 shadow-emerald-400/50'
+                            } shadow-lg`} 
+                          />
                           
-                          <span className="text-[10px] font-mono text-white/35 tracking-wide">
+                          <span className="text-[10px] font-mono text-white/40 tracking-widest uppercase">
                             {new Date(message.timestamp).toLocaleTimeString([], { 
                               hour: '2-digit', 
                               minute: '2-digit'
                             })}
                           </span>
 
-                          {/* AI Actions - Minimal */}
+                          {/* Futuristic AI Actions */}
                           {message.role === 'assistant' && !message.error && (
                             <>
-                              <div className="w-px h-2.5 bg-white/15 mx-0.5" />
+                              <div className="w-px h-3 bg-gradient-to-b from-transparent via-emerald-400/40 to-transparent mx-1" />
                               <motion.button
-                                whileHover={{ scale: 1.1 }}
+                                whileHover={{ scale: 1.15, y: -1 }}
                                 whileTap={{ scale: 0.95 }}
-                                className="text-[10px] font-mono text-neon-cyan/60 hover:text-neon-cyan transition-colors flex items-center gap-1"
+                                className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-400/30 text-[9px] font-mono text-emerald-300 hover:bg-emerald-500/20 hover:border-emerald-400/50 transition-all flex items-center gap-1"
                               >
                                 <Code className="w-2.5 h-2.5" />
                                 COPY
                               </motion.button>
                               <motion.button
-                                whileHover={{ scale: 1.1 }}
+                                whileHover={{ scale: 1.15, y: -1 }}
                                 whileTap={{ scale: 0.95 }}
-                                className="text-[10px] font-mono text-neon-violet/60 hover:text-neon-violet transition-colors flex items-center gap-1"
+                                className="px-2 py-0.5 rounded bg-purple-500/10 border border-purple-400/30 text-[9px] font-mono text-purple-300 hover:bg-purple-500/20 hover:border-purple-400/50 transition-all flex items-center gap-1"
                               >
                                 <Sparkles className="w-2.5 h-2.5" />
                                 REGEN
@@ -658,7 +758,7 @@ export default function ChatbotPage() {
               ))}
             </AnimatePresence>
 
-            {/* AI Pulse Indicator (when loading) - Compact */}
+            {/* Futuristic AI Processing Indicator */}
             {isLoading && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -666,49 +766,76 @@ export default function ChatbotPage() {
                 className="relative flex justify-start mb-5"
               >
                 <div className="relative">
-                  {/* Outer Ripple - Subtle */}
+                  {/* Hexagonal Energy Ripple */}
                   <motion.div
                     animate={{ 
-                      scale: [1, 1.3, 1],
-                      opacity: [0.3, 0, 0.3]
+                      scale: [1, 1.4, 1],
+                      opacity: [0.4, 0, 0.4],
+                      rotate: [0, 180, 360]
                     }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="absolute inset-0 rounded-xl bg-gradient-to-r from-neon-cyan/40 to-neon-magenta/40 blur-lg"
+                    transition={{ duration: 3, repeat: Infinity }}
+                    className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/40 via-purple-500/40 to-emerald-500/40 blur-xl"
                   />
 
-                  {/* Thinking Panel - Clean */}
-                  <div className="relative backdrop-blur-xl bg-gradient-to-br from-neon-magenta/15 via-purple-500/8 to-transparent border border-neon-magenta/25 rounded-xl p-4 shadow-lg">
+                  {/* Neural Processing Panel */}
+                  <div className="relative backdrop-blur-2xl bg-gradient-to-br from-emerald-900/50 via-teal-900/30 to-transparent border-2 border-emerald-400/40 rounded-2xl p-4 shadow-2xl shadow-emerald-500/30"
+                    style={{
+                      clipPath: 'polygon(5% 0%, 100% 0%, 100% 85%, 95% 100%, 0% 100%, 0% 15%)'
+                    }}
+                  >
+                    {/* Corner Tech Accents */}
+                    <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-emerald-400/60 rounded-tl-lg" />
+                    <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-emerald-400/60 rounded-br-lg" />
+                    
                     <div className="flex items-center gap-3">
-                      {/* Simple Spinning Icon */}
+                      {/* Rotating Neural Icon */}
                       <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        animate={{ 
+                          rotate: 360,
+                          scale: [1, 1.1, 1]
+                        }}
+                        transition={{ 
+                          rotate: { duration: 2, repeat: Infinity, ease: "linear" },
+                          scale: { duration: 1, repeat: Infinity }
+                        }}
+                        className="relative"
                       >
-                        <Brain className="w-5 h-5 text-neon-cyan" />
+                        <div className="absolute inset-0 bg-emerald-400/30 blur-md rounded-full" />
+                        <Brain className="w-6 h-6 text-emerald-300 relative" />
                       </motion.div>
 
-                      {/* Minimal Dots */}
-                      <div className="flex gap-1.5">
-                        {[0, 1, 2].map((i) => (
+                      {/* Animated Processing Bars */}
+                      <div className="flex gap-1">
+                        {[0, 1, 2, 3].map((i) => (
                           <motion.div
                             key={i}
                             animate={{ 
-                              y: [0, -6, 0]
+                              height: ['8px', '20px', '8px'],
+                              opacity: [0.4, 1, 0.4]
                             }}
                             transition={{ 
-                              duration: 0.6, 
+                              duration: 0.8, 
                               repeat: Infinity, 
                               delay: i * 0.15 
                             }}
-                            className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-neon-cyan to-neon-magenta"
+                            className="w-1 rounded-full bg-gradient-to-t from-emerald-600 to-emerald-300"
                           />
                         ))}
                       </div>
 
-                      {/* Clean Text */}
-                      <span className="text-sm font-medium text-white/70">
-                        Processing...
-                      </span>
+                      {/* Futuristic Text */}
+                      <div className="flex flex-col">
+                        <span className="text-xs font-mono uppercase tracking-widest text-emerald-300">
+                          Neural Processing
+                        </span>
+                        <motion.span 
+                          animate={{ opacity: [0.5, 1, 0.5] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                          className="text-[10px] font-mono text-emerald-400/60"
+                        >
+                          Analyzing query...
+                        </motion.span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -719,23 +846,100 @@ export default function ChatbotPage() {
           </motion.div>
         )}
 
-        {/* Main Content - Centered */}
+        {/* Main Content - Fully Centered Splash Screen */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`${messages.length === 1 ? 'text-center' : ''}`}
+          className={`w-full ${messages.length === 1 ? 'flex flex-col items-center justify-center min-h-[80vh]' : ''}`}
         >
-          {/* Logo/Title - Only show when no messages */}
+          {/* Centered Logo/Welcome - Full Screen Splash */}
           {messages.length === 1 && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="mb-12"
+              className="text-center mb-16"
             >
-              <h1 className="text-5xl md:text-6xl font-space font-bold mb-4">
-                <span className="gradient-text">MindNeox</span>
-              </h1>
-              <p className="text-white/60 text-lg">Ask anything. Upload files. Get intelligent answers.</p>
+              {/* Futuristic Logo with Glow */}
+              <motion.div
+                animate={{ 
+                  scale: [1, 1.02, 1],
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+                className="relative inline-block mb-8"
+              >
+                {/* Hexagonal Glow */}
+                <motion.div
+                  animate={{ 
+                    opacity: [0.3, 0.6, 0.3],
+                    scale: [1, 1.1, 1]
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="absolute inset-0 bg-gradient-to-r from-indigo-500/40 via-purple-500/40 to-emerald-500/40 blur-3xl rounded-full"
+                />
+                
+                {/* Logo Text */}
+                <h1 className="relative text-7xl md:text-8xl font-space font-bold">
+                  <span className="gradient-text">MindNeox</span>
+                </h1>
+                
+                {/* Subtitle Badge */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="mt-4 inline-block"
+                >
+                  <div className="px-4 py-1.5 rounded-full bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-emerald-500/20 border border-indigo-400/30 backdrop-blur-xl">
+                    <span className="text-xs font-mono uppercase tracking-widest text-indigo-300">
+                      Neural AI Interface
+                    </span>
+                  </div>
+                </motion.div>
+              </motion.div>
+              
+              {/* Welcome Message */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="space-y-3"
+              >
+                <p className="text-white/80 text-xl md:text-2xl font-medium">
+                  Welcome to the Future of AI
+                </p>
+                <p className="text-white/50 text-base md:text-lg max-w-2xl mx-auto">
+                  Ask anything. Upload files. Get intelligent answers powered by advanced neural networks.
+                </p>
+              </motion.div>
+              
+              {/* Animated Tech Elements */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.7 }}
+                className="mt-8 flex items-center justify-center gap-6"
+              >
+                {[
+                  { icon: Brain, label: 'Neural AI', color: 'indigo' },
+                  { icon: Zap, label: 'Fast', color: 'purple' },
+                  { icon: Database, label: 'Smart', color: 'emerald' }
+                ].map((item, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.8 + idx * 0.1 }}
+                    className="flex flex-col items-center gap-2"
+                  >
+                    <div className={`w-12 h-12 rounded-lg bg-${item.color}-500/10 border border-${item.color}-400/30 flex items-center justify-center backdrop-blur-xl`}>
+                      <item.icon className={`w-6 h-6 text-${item.color}-400`} />
+                    </div>
+                    <span className="text-xs text-white/40 font-mono uppercase tracking-wider">
+                      {item.label}
+                    </span>
+                  </motion.div>
+                ))}
+              </motion.div>
             </motion.div>
           )}
 
@@ -783,29 +987,45 @@ export default function ChatbotPage() {
               </motion.div>
             )}
 
-            {/* Neural Command Console - Input Bar - Clean & Compact */}
+            {/* Futuristic Command Terminal - Input Bar */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="relative group"
             >
-              {/* Subtle Command Console Glow */}
+              {/* Hexagonal Energy Field */}
               <motion.div
                 animate={{
-                  opacity: input.length > 0 ? [0.3, 0.5, 0.3] : [0.2, 0.3, 0.2]
+                  opacity: input.length > 0 ? [0.4, 0.7, 0.4] : [0.2, 0.4, 0.2],
+                  scale: input.length > 0 ? [1, 1.02, 1] : [1, 1.01, 1]
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="absolute -inset-[0.5px] rounded-xl bg-gradient-to-r from-neon-cyan/20 via-neon-violet/15 to-neon-magenta/20 blur-sm"
+                className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-indigo-500/30 via-purple-500/20 to-emerald-500/30 blur-md"
               />
 
-              {/* Main Console Panel - Cleaner */}
-              <div className="relative backdrop-blur-xl bg-gradient-to-br from-white/8 via-white/4 to-white/8 rounded-xl border border-white/15 shadow-lg overflow-hidden max-w-3xl mx-auto">
-                {/* Subtle Scan Line */}
+              {/* Main Terminal Panel - Unique Design */}
+              <div className="relative backdrop-blur-2xl bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-900/80 rounded-2xl border-2 border-indigo-500/30 shadow-2xl shadow-indigo-500/20 overflow-hidden max-w-3xl mx-auto"
+                style={{
+                  clipPath: 'polygon(2% 0%, 98% 0%, 100% 5%, 100% 95%, 98% 100%, 2% 100%, 0% 95%, 0% 5%)'
+                }}
+              >
+                {/* Holographic Scan Lines */}
                 <motion.div
                   animate={{ x: ['-100%', '200%'] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                  className="absolute top-0 left-0 w-1/3 h-full bg-gradient-to-r from-transparent via-neon-cyan/10 to-transparent pointer-events-none"
+                  transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+                  className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-transparent via-indigo-400/15 to-transparent pointer-events-none"
                 />
+                <motion.div
+                  animate={{ y: ['-100%', '200%'] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "linear", delay: 1 }}
+                  className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-transparent via-emerald-400/10 to-transparent pointer-events-none"
+                />
+                
+                {/* Corner Tech Accents */}
+                <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-indigo-400/40 rounded-tl-lg" />
+                <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-emerald-400/40 rounded-tr-lg" />
+                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-emerald-400/40 rounded-bl-lg" />
+                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-indigo-400/40 rounded-br-lg" />
 
                 <div className="flex items-center gap-2 p-1.5">
                   {/* Voice Command Button - Compact */}
@@ -880,72 +1100,100 @@ export default function ChatbotPage() {
                     {/* Divider */}
                     <div className="w-px h-5 bg-white/15 mx-0.5" />
 
-                    {/* Send Button - Clean */}
+                    {/* Futuristic Send Button */}
                     <motion.button
                       onClick={handleSend}
                       disabled={(!input.trim() && uploadedFiles.length === 0) || isLoading}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.92 }}
                       className="relative group/send flex-shrink-0"
                     >
-                      {/* Button Glow */}
-                      <div className={`absolute inset-0 rounded-lg blur-md transition-all duration-300 ${
-                        (!input.trim() && uploadedFiles.length === 0) || isLoading
-                          ? 'opacity-0'
-                          : 'bg-gradient-to-r from-neon-cyan/40 to-neon-magenta/40 opacity-50 group-hover/send:opacity-80'
-                      }`} />
+                      {/* Hexagonal Energy Pulse */}
+                      <motion.div 
+                        animate={(!input.trim() && uploadedFiles.length === 0) || isLoading ? {} : {
+                          scale: [1, 1.3, 1],
+                          opacity: [0.5, 0, 0.5]
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className={`absolute inset-0 rounded-lg blur-lg transition-all duration-300 ${
+                          (!input.trim() && uploadedFiles.length === 0) || isLoading
+                            ? 'opacity-0'
+                            : 'bg-gradient-to-r from-indigo-500/60 via-purple-500/60 to-emerald-500/60'
+                        }`} 
+                      />
                       
-                      {/* Button Body */}
-                      <div className={`relative w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
-                        (!input.trim() && uploadedFiles.length === 0) || isLoading
-                          ? 'bg-white/5 border border-white/10 cursor-not-allowed'
-                          : 'bg-gradient-to-r from-neon-cyan/80 via-blue-500/80 to-neon-magenta/80 border border-neon-cyan/40 hover:border-neon-cyan/60'
-                      }`}>
+                      {/* Button Body - Hexagonal */}
+                      <div 
+                        className={`relative w-11 h-11 flex items-center justify-center transition-all duration-300 ${
+                          (!input.trim() && uploadedFiles.length === 0) || isLoading
+                            ? 'bg-slate-800/50 border-2 border-slate-700/50 cursor-not-allowed'
+                            : 'bg-gradient-to-br from-indigo-600 via-purple-600 to-emerald-600 border-2 border-indigo-400/60 hover:border-emerald-400/80 shadow-lg shadow-indigo-500/30'
+                        }`}
+                        style={{
+                          clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)'
+                        }}
+                      >
                         {isLoading ? (
                           <motion.div
                             animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
                           >
-                            <Loader className="w-4 h-4 text-white" />
+                            <Zap className="w-5 h-5 text-white" />
                           </motion.div>
                         ) : (
                           <Send className="w-4 h-4 text-white" />
                         )}
                       </div>
+                      
+                      {/* Corner Accents */}
+                      {!isLoading && input.trim() && (
+                        <>
+                          <motion.div 
+                            animate={{ opacity: [0.3, 0.8, 0.3] }}
+                            transition={{ duration: 1.5, repeat: Infinity }}
+                            className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full blur-sm" 
+                          />
+                          <motion.div 
+                            animate={{ opacity: [0.3, 0.8, 0.3] }}
+                            transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
+                            className="absolute -bottom-1 -left-1 w-2 h-2 bg-indigo-400 rounded-full blur-sm" 
+                          />
+                        </>
+                      )}
                     </motion.button>
                   </div>
                 </div>
               </div>
             </motion.div>
 
-            {/* Category Pills - Only show when no messages */}
+            {/* Quick Action Pills - Only show when no messages */}
             {messages.length === 1 && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="flex flex-wrap items-center justify-center gap-2 pt-4"
+                transition={{ delay: 0.9 }}
+                className="flex flex-wrap items-center justify-center gap-2 pt-6 max-w-3xl mx-auto"
               >
-                <button className="glass-card px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2 group">
-                  <Brain className="w-4 h-4 text-neon-cyan group-hover:scale-110 transition-transform" />
-                  AI Development
-                </button>
-                <button className="glass-card px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2 group">
-                  <Code className="w-4 h-4 text-neon-violet group-hover:scale-110 transition-transform" />
-                  Code Assistant
-                </button>
-                <button className="glass-card px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2 group">
-                  <Database className="w-4 h-4 text-neon-magenta group-hover:scale-110 transition-transform" />
-                  Data Analysis
-                </button>
-                <button className="glass-card px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2 group">
-                  <Sparkles className="w-4 h-4 text-yellow-400 group-hover:scale-110 transition-transform" />
-                  Creative Writing
-                </button>
-                <button className="glass-card px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2 group">
-                  <Activity className="w-4 h-4 text-green-400 group-hover:scale-110 transition-transform" />
-                  Research
-                </button>
+                {[
+                  { icon: Brain, label: 'AI Development', color: 'indigo' },
+                  { icon: Code, label: 'Code Assistant', color: 'purple' },
+                  { icon: Database, label: 'Data Analysis', color: 'emerald' },
+                  { icon: Sparkles, label: 'Creative Writing', color: 'yellow' },
+                  { icon: Activity, label: 'Research', color: 'green' }
+                ].map((item, idx) => (
+                  <motion.button
+                    key={idx}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 1 + idx * 0.05 }}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="glass-card px-4 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2 group border border-white/10 hover:border-white/20"
+                  >
+                    <item.icon className={`w-4 h-4 text-${item.color}-400 group-hover:scale-110 transition-transform`} />
+                    {item.label}
+                  </motion.button>
+                ))}
               </motion.div>
             )}
           </div>
@@ -954,11 +1202,11 @@ export default function ChatbotPage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: messages.length === 1 ? 1.2 : 0.3 }}
             className="mt-8 text-center"
           >
-            <p className="text-xs text-white/30">
-              Powered by <span className="text-neon-cyan">MindNeox AI</span> • Press Enter to send • Upload files for analysis
+            <p className="text-xs text-white/30 font-mono">
+              Powered by <span className="text-indigo-400">MindNeox AI</span> • Press <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white/40">Enter</kbd> to send • Upload files for analysis
             </p>
           </motion.div>
         </motion.div>
