@@ -9,7 +9,18 @@ const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 export default function ReportPage() {
   const { state } = useLocation()
   const navigate = useNavigate()
-  const { user, isLoaded } = useUser()
+  
+  // Safe Clerk usage with fallback
+  let user = null
+  let isLoaded = true
+  
+  try {
+    const clerkData = useUser()
+    user = clerkData.user
+    isLoaded = clerkData.isLoaded
+  } catch (error) {
+    console.log('Clerk not available, using anonymous mode')
+  }
   const [type, setType] = useState('bug')
   const [description, setDescription] = useState('')
   const [includeContext, setIncludeContext] = useState(true)

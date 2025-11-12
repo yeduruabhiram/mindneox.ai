@@ -37,7 +37,18 @@ import useConversationLimit from '../hooks/useConversationLimit'
 import LoginPrompt from '../components/LoginPrompt'
 
 export default function ChatbotPage() {
-  const { user, isLoaded } = useUser()
+  // Safe Clerk usage with fallback
+  let user = null
+  let isLoaded = true
+  
+  try {
+    const clerkData = useUser()
+    user = clerkData.user
+    isLoaded = clerkData.isLoaded
+  } catch (error) {
+    console.log('Clerk not available, using anonymous mode')
+  }
+  
   const { 
     showLoginPrompt, 
     incrementConversation, 
